@@ -50,13 +50,13 @@ public class ActivatedService {
         }
         
         ActiveExercise exercise = mapDtoToActiveExercise(ex, user);
-        activeRepository.save(exercise);
+        ActiveExercise savedExercise = activeRepository.save(exercise);
         
        return  ResponseEntity.ok(
                 new ApiResponse<>(
                         HttpStatus.OK.value(), 
-                        "OK",
-                        "Executed Exercise added "+SUCCESSFULL
+                        "SUCCESSFULL",
+                        savedExercise.getUser().getId()
                         )
         );
     }
