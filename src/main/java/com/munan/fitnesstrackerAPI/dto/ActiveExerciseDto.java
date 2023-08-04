@@ -4,7 +4,9 @@
  */
 package com.munan.fitnesstrackerAPI.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +15,9 @@ import lombok.NoArgsConstructor;
  * @author godwi
  */
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ActiveExerciseDto {
    
     private String name;
@@ -22,7 +26,7 @@ public class ActiveExerciseDto {
     
     private Double calory;
     
-    private Date date;
+    private LocalDate date;
     
     private String state;
 }

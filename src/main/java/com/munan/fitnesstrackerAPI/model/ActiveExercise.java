@@ -12,8 +12,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Table(name = "active_exercise")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActiveExercise {
@@ -42,9 +44,10 @@ public class ActiveExercise {
     @Column(name = "calory")
     private Double calory;
     
-    @Column(name = "date")
-    private Date date;
-        
+    
+    @Column(name = "date", columnDefinition = "DATE")
+    private LocalDate date;
+    
     @Column(name = "state")
     private String state;
     

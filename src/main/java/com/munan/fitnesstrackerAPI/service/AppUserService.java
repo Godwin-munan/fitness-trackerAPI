@@ -5,9 +5,7 @@
 package com.munan.fitnesstrackerAPI.service;
 
 import static com.munan.fitnesstrackerAPI.constant.SecurityConstant.ACCESS_TOKEN;
-import static com.munan.fitnesstrackerAPI.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static com.munan.fitnesstrackerAPI.constant.UserConstant.INVALID_USERNAME;
-import static com.munan.fitnesstrackerAPI.constant.UserConstant.SUCCESSFULL;
 import static com.munan.fitnesstrackerAPI.constant.UserConstant.USERNAME_ALREADY_EXIST;
 import static com.munan.fitnesstrackerAPI.constant.UserConstant.USER_NOT_FOUND_BY_USERNAME;
 import com.munan.fitnesstrackerAPI.dto.LoginRequest;
@@ -18,18 +16,17 @@ import com.munan.fitnesstrackerAPI.model.AppUser;
 import com.munan.fitnesstrackerAPI.model.Role;
 import com.munan.fitnesstrackerAPI.repository.AppUserRepository;
 import com.munan.fitnesstrackerAPI.utils.ApiResponse;
-import com.munan.fitnesstrackerAPI.utils.Token;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.HOURS;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import static org.springframework.http.HttpStatus.OK;
@@ -39,10 +36,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.security.oauth2.jose.jws.MacAlgorithm.*;
 
 /**
  *
@@ -50,6 +50,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AppUserService {
     private final AppUserRepository userRepository;
     private final RoleService roleService;
@@ -59,23 +60,6 @@ public class AppUserService {
     private final JwtEncoder encoder;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AppUserService.class);
-    
-    @Autowired
-    public AppUserService(
-            AppUserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            LoginAttemptService loginAttemptService,
-            AuthenticationManager authenticationManager,
-            JwtEncoder encoder,
-            RoleService roleService
-            ){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.loginAttemptService = loginAttemptService;
-        this.authenticationManager = authenticationManager;
-        this.encoder = encoder;
-        this.roleService = roleService;
-    }
     
     
     //AUTHENTICATE AND LOGIN USER
@@ -89,7 +73,7 @@ public class AppUserService {
         List<String> scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-        
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("FitnessTracker")
                 .issuedAt(now)
@@ -97,9 +81,19 @@ public class AppUserService {
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
+ /*  
+        **Asyme
+        **
 
         JwtEncoderParameters encoderParameters = JwtEncoderParameters.from(claims);
+ */
+ /*
+ **Sym
+*/
+        var encoderParameters = JwtEncoderParameters.from(JwsHeader.with(HS256).build(), claims);
 
+        
+ 
         String token = this.encoder.encode(encoderParameters).getTokenValue();
         
         HttpHeaders jwtHeaders = getJwtHeader(token);
@@ -124,7 +118,7 @@ public class AppUserService {
         user.setUsername(register.getUsername());
         user.setPassword(encodePassword(register.getPassword()));
         user.setBirthday(register.getBirthday());
-        user.setJoinDate(new Date());
+        user.setJoinDate(LocalDate.now());
         user.setActive(true);
         user.setNotLocked(true);
         user.setRole(role);
@@ -148,8 +142,19 @@ public class AppUserService {
                 .claim("scope", scope)
                 .build();
 
-        JwtEncoderParameters encoderParameters = JwtEncoderParameters.from(claims);
+ /*  
+        **Asyme
+        **
 
+    JwtEncoderParameters encoderParameters = JwtEncoderParameters.from(claims);
+ */
+
+/*
+ **Sym
+ */
+        var encoderParameters = JwtEncoderParameters.from(JwsHeader.with(HS256).build(), claims);
+
+ 
         String token = this.encoder.encode(encoderParameters).getTokenValue();
         
         HttpHeaders jwtHeaders = getJwtHeader(token);

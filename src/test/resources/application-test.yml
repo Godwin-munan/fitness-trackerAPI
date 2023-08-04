@@ -1,0 +1,26 @@
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL  
+    username: sa
+    password: 
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop  
+#
+#  main:
+#    allow-circular-references: true
+#    server:
+#      port: 8080
+#      
+#keyId: 8d6c9933-8aa0-489d-b38f-7c2e41168d4a
+#
+#
+#rsa:
+#  privatekey: classpath:certs/private.pem
+#  publickey: classpath:certs/public.pem

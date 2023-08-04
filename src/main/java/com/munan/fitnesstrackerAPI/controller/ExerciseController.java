@@ -38,8 +38,8 @@ public class ExerciseController {
         this.exerciseService = exerciseService;
     }
     
-    @Operation(summary = "Add Exercise", description = "Add new exercise")
     @PostMapping("")
+    @Operation(summary = "Add Exercise", description = "Add new exercise")
     public ResponseEntity<ApiResponse<?>> addExercise(@RequestBody Exercise exercise) throws AlreadyExistException, NotFoundException {
         return exerciseService.addExercise(exercise);
     }
@@ -51,8 +51,8 @@ public class ExerciseController {
         return exerciseService.getExerciseList();
     }
     
-    @Operation(summary = "Get exercise by Id", description = "Get exercise by Id")
     @GetMapping("/{ex_id}")
+    @Operation(summary = "Get exercise by Id", description = "Get exercise by Id")
     public ResponseEntity<ApiResponse<?>> getExerciseById(@PathVariable(value = "ex_id") Long id) throws AlreadyExistException, NotFoundException{
         return exerciseService.getExerciseById(id);
     }

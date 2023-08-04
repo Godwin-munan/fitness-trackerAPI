@@ -6,18 +6,19 @@ package com.munan.fitnesstrackerAPI.config.security;
 
 import static com.munan.fitnesstrackerAPI.constant.SecurityConstant.PUBLIC_URLS;
 import com.munan.fitnesstrackerAPI.security.MyUserDetailService;
-import com.munan.fitnesstrackerAPI.service.AppUserService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.util.Collections;
 import java.util.List;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,21 +55,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
     
     @Value("${keyId}")
     private String keyId;
     
+    @Value("${jwt.secret}")
+    private String jwtKey;
+    
     private final MyUserDetailService userDetailService;
-    private final RsaKeyProperties rsaKeys;
+//    private final RsaKeyProperties rsaKeys;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
-    
-    @Autowired
-    public SecurityConfiguration(MyUserDetailService userDetailService, RsaKeyProperties rsaKeys){
-        this.userDetailService = userDetailService;
-        this.rsaKeys = rsaKeys;
-    }
+
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -103,7 +103,11 @@ public class SecurityConfiguration {
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+  /*  
+    Asymetric Implementation
     
+    **
+
     @Bean
     JwtEncoder jwtEncoder() {
 
@@ -122,7 +126,21 @@ public class SecurityConfiguration {
     JwtDecoder jwtDecoder(){
         return NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey()).build();
     }
-    
+*/  
+   
+/*
+**Sym
+**
+*/
+    @Bean
+    JwtEncoder jwtEncoder() {return new NimbusJwtEncoder(new ImmutableSecret<>(jwtKey.getBytes()));}
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        SecretKeySpec originalKey = new SecretKeySpec(jwtKey.getBytes(),"HmacSHA256");
+        return NimbusJwtDecoder.withSecretKey(originalKey).build();
+    }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
 

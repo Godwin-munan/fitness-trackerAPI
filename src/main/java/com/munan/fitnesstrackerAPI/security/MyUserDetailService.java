@@ -9,7 +9,7 @@ import static com.munan.fitnesstrackerAPI.constant.UserConstant.USER_NOT_FOUND_B
 import com.munan.fitnesstrackerAPI.model.AppUser;
 import com.munan.fitnesstrackerAPI.repository.AppUserRepository;
 import com.munan.fitnesstrackerAPI.service.LoginAttemptService;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class MyUserDetailService implements UserDetailsService{
 
             loginAttemptService.validateLoginAttempts(user.get());
             user.get().setLastLoginDateDisplay(user.get().getLastLoginDate());
-            user.get().setLastLoginDate(new Date());
+            user.get().setLastLoginDate(LocalDate.now());
             userRepository.save(user.get());
 
             MyUserDetail userPrincipal;

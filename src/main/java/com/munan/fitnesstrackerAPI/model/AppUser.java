@@ -13,8 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,9 +25,10 @@ import lombok.Setter;
  * @author godwi
  */
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUser implements Serializable{
@@ -41,8 +43,8 @@ public class AppUser implements Serializable{
     @Column(name = "username")
     private String username;
     
-    @Column(name = "birth_date")
-    private Date birthday;
+    @Column(name = "birth_date", columnDefinition = "DATE")
+    private LocalDate birthday;
 
     
     @Column(name = "password")
@@ -51,14 +53,14 @@ public class AppUser implements Serializable{
     
     @Column(name = "join_date")
     @JsonIgnore
-    private Date joinDate;
+    private LocalDate joinDate;
     
     @Column(name = "last_login_date")
     @JsonIgnore
-    private Date lastLoginDate;
+    private LocalDate lastLoginDate;
 
     @Column(name = "last_login_date_display")
-    private Date lastLoginDateDisplay;
+    private LocalDate lastLoginDateDisplay;
 
     @Column(name = "is_active")
     @JsonIgnore

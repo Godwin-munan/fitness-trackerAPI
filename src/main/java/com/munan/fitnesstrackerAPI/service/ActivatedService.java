@@ -15,8 +15,9 @@ import com.munan.fitnesstrackerAPI.repository.ActivatedRepository;
 import com.munan.fitnesstrackerAPI.repository.ExerciseRepository;
 import com.munan.fitnesstrackerAPI.utils.ApiResponse;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,21 +28,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ActivatedService {
     
     private final ActivatedRepository activeRepository;
     private final ExerciseRepository exerciseRepository;
-    
     private final AppUserService userService;
     
-    @Autowired
-    public ActivatedService(ActivatedRepository activeRepository, ExerciseRepository exerciseRepository, AppUserService userService){
-        this.activeRepository = activeRepository;
-        this.exerciseRepository = exerciseRepository;
-        this.userService = userService;
-    }
 
-    public ResponseEntity<ApiResponse<?>> addAtiveExercise(Long userId,ActiveExerciseDto ex) throws NotFoundException {
+    //Create Finished Exercises by User Id
+    public ResponseEntity<ApiResponse<Long>> addAtiveExercise(Long userId,ActiveExerciseDto ex) throws NotFoundException {
         Optional<Exercise> existEx = exerciseRepository.findByName(ex.getName());
         AppUser user = userService.findUserById(userId);
         
@@ -52,29 +48,25 @@ public class ActivatedService {
         ActiveExercise exercise = mapDtoToActiveExercise(ex, user);
         ActiveExercise savedExercise = activeRepository.save(exercise);
         
-       return  ResponseEntity.ok(
-                new ApiResponse<>(
+       return  new ResponseEntity<>(new ApiResponse<>(
                         HttpStatus.OK.value(), 
-                        "SUCCESSFULL",
-                        savedExercise.getUser().getId()
-                        )
-        );
+                        SUCCESSFULL,
+                        savedExercise.getUser().getId()),
+                        HttpStatus.CREATED);
     }
 
-    public ResponseEntity<ApiResponse<?>> getActiveExerciseList(Long userId) throws NotFoundException {
+    //Get Finished Exercise by User Id
+    public ResponseEntity<ApiResponse<List<ActiveExercise>>> getActiveExerciseList(Long userId) throws NotFoundException {
         
         userService.findUserById(userId);
         
-        
-        return ResponseEntity.ok(
-                new ApiResponse<>(
+        return ResponseEntity.ok(new ApiResponse<>(
                         HttpStatus.OK.value(), 
                         SUCCESSFULL,
-                        activeRepository.findByUser_id(userId)
-                        )
-        );
+                        activeRepository.findByUser_id(userId).get()));
     }
     
+    //Private method to map active ExerciseDto to active Exercise
     private ActiveExercise mapDtoToActiveExercise(ActiveExerciseDto ex, AppUser user){
         ActiveExercise exercise = new ActiveExercise();
         

@@ -4,6 +4,7 @@
  */
 package com.munan.fitnesstrackerAPI.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,6 @@ public class LoginRequest {
     
     private String username;
     private String password;
-    private Date birthday;
+    private LocalDate birthday;
     
 }
